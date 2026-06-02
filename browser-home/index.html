@@ -113,7 +113,6 @@ font-weight:700;
 cursor:pointer;
 }
 
-/* SHORTCUTS */
 .shortcuts{
 display:flex;
 flex-wrap:wrap;
@@ -133,8 +132,6 @@ background:rgba(255,255,255,.08);
 
 cursor:pointer;
 
-transition:.18s;
-
 position:relative;
 }
 
@@ -143,13 +140,6 @@ transform:translateY(-5px);
 background:rgba(255,255,255,.16);
 }
 
-.small{
-font-size:12px;
-opacity:.7;
-margin-top:5px;
-}
-
-/* EDIT BUTTON */
 .editBtn{
 position:absolute;
 top:8px;
@@ -165,12 +155,7 @@ border-radius:10px;
 background:rgba(255,255,255,.15);
 
 color:white;
-
 cursor:pointer;
-}
-
-.editBtn:hover{
-background:rgba(255,255,255,.25);
 }
 
 .add{
@@ -189,7 +174,6 @@ background:rgba(79,134,255,.25);
 <div class="logo">ORVI</div>
 
 <select id="engine">
-
 <option value="https://www.startpage.com/search?q=">Startpage</option>
 <option value="https://www.google.com/search?q=">Google</option>
 <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
@@ -200,7 +184,6 @@ background:rgba(79,134,255,.25);
 <option value="https://www.youtube.com/results?search_query=">YouTube</option>
 <option value="https://github.com/search?q=">GitHub</option>
 <option value="https://en.wikipedia.org/w/index.php?search=">Wikipedia</option>
-
 </select>
 
 </div>
@@ -215,21 +198,6 @@ background:rgba(79,134,255,.25);
 
 <div class="shortcuts" id="shortcuts">
 
-<div class="card" data-url="https://youtube.com" onclick="openShortcut(this)">
-YouTube
-<button class="editBtn" onclick="editShortcut(event,this)">Edit</button>
-</div>
-
-<div class="card" data-url="https://orvi-os.github.io" onclick="openShortcut(this)">
-Orvi OS
-<button class="editBtn" onclick="editShortcut(event,this)">Edit</button>
-</div>
-
-<div class="card" data-url="https://wikipedia.org" onclick="openShortcut(this)">
-Wikipedia
-<button class="editBtn" onclick="editShortcut(event,this)">Edit</button>
-</div>
-
 <div class="card add" onclick="addShortcut()">
 + Add
 </div>
@@ -242,6 +210,17 @@ Wikipedia
 
 const q = document.getElementById("query");
 const engine = document.getElementById("engine");
+const box = document.getElementById("shortcuts");
+
+let shortcuts = JSON.parse(localStorage.getItem("orvi_shortcuts") || "[]");
+
+/* LOAD ENGINE */
+engine.value = localStorage.getItem("orvi_engine") || engine.value;
+
+/* SAVE ENGINE */
+engine.addEventListener("change", ()=>{
+localStorage.setItem("orvi_engine", engine.value);
+});
 
 /* SEARCH */
 function searchWeb(){
@@ -254,9 +233,59 @@ engine.value + encodeURIComponent(q.value),
 );
 }
 
-/* OPEN SHORTCUT (uses hidden dataset url) */
-function openShortcut(el){
-window.open(el.dataset.url,"_blank","noopener");
+/* OPEN */
+function openShortcut(url){
+window.open(url,"_blank","noopener");
+}
+
+/* SAVE SHORTCUTS */
+function saveShortcuts(){
+localStorage.setItem("orvi_shortcuts", JSON.stringify(shortcuts));
+}
+
+/* RENDER */
+function render(){
+
+box.innerHTML = "";
+
+shortcuts.forEach((s,i)=>{
+
+let card = document.createElement("div");
+card.className = "card";
+
+card.innerHTML = `
+${s.name}
+<button class="editBtn">Edit</button>
+`;
+
+card.onclick = ()=> openShortcut(s.url);
+
+/* EDIT */
+card.querySelector("button").onclick = (e)=>{
+e.stopPropagation();
+
+let name = prompt("New name:", s.name);
+if(!name) return;
+
+let url = prompt("New URL:", s.url);
+if(!url) return;
+
+shortcuts[i] = {name,url};
+
+saveShortcuts();
+render();
+};
+
+box.appendChild(card);
+});
+
+/* ADD BUTTON */
+let add = document.createElement("div");
+add.className = "card add";
+add.textContent = "+ Add";
+add.onclick = addShortcut;
+
+box.appendChild(add);
 }
 
 /* ADD */
@@ -268,51 +297,14 @@ if(!name) return;
 let url = prompt("URL:");
 if(!url) return;
 
-createShortcut(name,url);
+shortcuts.push({name,url});
+
+saveShortcuts();
+render();
 }
 
-/* CREATE */
-function createShortcut(name,url){
-
-let box = document.getElementById("shortcuts");
-
-let card = document.createElement("div");
-card.className = "card";
-card.dataset.url = url;
-
-card.innerHTML = `
-${name}
-<button class="editBtn">Edit</button>
-`;
-
-card.onclick = () => openShortcut(card);
-
-card.querySelector("button").onclick = (e)=>{
-editShortcut(e,card.querySelector("button"));
-};
-
-box.insertBefore(card, box.lastElementChild);
-}
-
-/* EDIT (FIXED) */
-function editShortcut(e,btn){
-
-e.stopPropagation();
-
-let card = btn.parentElement;
-
-let name = prompt("New name:", card.firstChild.textContent.trim());
-if(!name) return;
-
-let url = prompt("New URL:", card.dataset.url);
-if(!url) return;
-
-/* update visible name only */
-card.childNodes[0].textContent = name + " ";
-
-/* update hidden url */
-card.dataset.url = url;
-}
+/* INIT */
+render();
 
 /* ENTER */
 q.addEventListener("keydown", e=>{
