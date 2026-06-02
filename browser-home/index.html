@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ORVI Browser</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{
+height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+background:
+linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.65)),
+url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80");
+
+background-size:cover;
+background-position:center;
+
+color:white;
+}
+
+/* MAIN */
+.container{
+width:980px;
+max-width:95vw;
+
+padding:40px;
+
+border-radius:34px;
+
+background:rgba(18,22,30,.40);
+
+backdrop-filter:blur(20px);
+
+border:1px solid rgba(255,255,255,.10);
+
+text-align:center;
+}
+
+/* TOP */
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:30px;
+}
+
+.logo{
+font-size:40px;
+font-weight:800;
+letter-spacing:2px;
+}
+
+/* SELECT */
+select{
+padding:12px 16px;
+
+border:none;
+outline:none;
+
+border-radius:14px;
+
+background:rgba(255,255,255,.12);
+
+color:white;
+
+cursor:pointer;
+}
+
+select option{ color:black; }
+
+/* SEARCH */
+.search{
+display:flex;
+gap:12px;
+
+margin-bottom:40px;
+}
+
+.search input{
+flex:1;
+
+padding:18px;
+
+border:none;
+outline:none;
+
+border-radius:18px;
+
+background:rgba(255,255,255,.10);
+
+color:white;
+font-size:18px;
+}
+
+.search button{
+padding:18px 26px;
+
+border:none;
+border-radius:18px;
+
+background:#4f86ff;
+
+color:white;
+
+font-weight:700;
+
+cursor:pointer;
+}
+
+/* SHORTCUTS */
+.shortcuts{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+
+gap:14px;
+}
+
+.card{
+width:170px;
+
+padding:18px;
+
+border-radius:20px;
+
+background:rgba(255,255,255,.08);
+
+cursor:pointer;
+
+transition:.18s;
+
+position:relative;
+}
+
+.card:hover{
+transform:translateY(-5px);
+background:rgba(255,255,255,.16);
+}
+
+.small{
+font-size:12px;
+opacity:.75;
+margin-top:5px;
+}
+
+/* ADD CARD */
+.add{
+background:rgba(79,134,255,.25);
+}
+
+/* EDIT BUTTON */
+.editBtn{
+position:absolute;
+top:8px;
+right:8px;
+
+font-size:11px;
+
+padding:4px 8px;
+
+border:none;
+border-radius:10px;
+
+background:rgba(255,255,255,.15);
+
+color:white;
+
+cursor:pointer;
+}
+
+.editBtn:hover{
+background:rgba(255,255,255,.25);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="topbar">
+
+<div class="logo">ORVI</div>
+
+<select id="engine">
+
+<option value="https://www.startpage.com/search?q=">Startpage</option>
+<option value="https://www.google.com/search?q=">Google</option>
+<option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
+<option value="https://www.bing.com/search?q=">Bing</option>
+<option value="https://search.brave.com/search?q=">Brave</option>
+<option value="https://www.ecosia.org/search?q=">Ecosia</option>
+<option value="https://www.qwant.com/?q=">Qwant</option>
+<option value="https://www.youtube.com/results?search_query=">YouTube</option>
+<option value="https://github.com/search?q=">GitHub</option>
+<option value="https://en.wikipedia.org/w/index.php?search=">Wikipedia</option>
+
+</select>
+
+</div>
+
+<div class="search">
+
+<input id="query" type="text" placeholder="Search the web...">
+
+<button onclick="searchWeb()">Search</button>
+
+</div>
+
+<div class="shortcuts" id="shortcuts">
+
+<div class="card">
+YouTube
+<div class="small">Video</div>
+<button class="editBtn" onclick="editShortcut(this)">Edit</button>
+</div>
+
+<div class="card">
+Orvi OS
+<div class="small">Project</div>
+<button class="editBtn" onclick="editShortcut(this)">Edit</button>
+</div>
+
+<div class="card">
+Wikipedia
+<div class="small">Knowledge</div>
+<button class="editBtn" onclick="editShortcut(this)">Edit</button>
+</div>
+
+<div class="card add" onclick="addShortcut()">
++ Add
+<div class="small">Shortcut</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const q = document.getElementById("query");
+const engine = document.getElementById("engine");
+
+/* SEARCH */
+function searchWeb(){
+if(!q.value) return;
+
+window.open(
+engine.value + encodeURIComponent(q.value),
+"_blank",
+"noopener"
+);
+}
+
+/* OPEN */
+function openLink(url){
+window.open(url,"_blank","noopener");
+}
+
+/* ADD */
+function addShortcut(){
+
+let name = prompt("Shortcut name:");
+if(!name) return;
+
+let url = prompt("URL:");
+if(!url) return;
+
+createShortcut(name,url);
+}
+
+/* CREATE */
+function createShortcut(name,url){
+
+let box = document.getElementById("shortcuts");
+
+let card = document.createElement("div");
+card.className = "card";
+
+let title = document.createElement("div");
+title.textContent = name;
+
+let sub = document.createElement("div");
+sub.className = "small";
+sub.textContent = url;
+
+let edit = document.createElement("button");
+edit.className = "editBtn";
+edit.textContent = "Edit";
+
+edit.onclick = function(e){
+e.stopPropagation();
+editShortcut(edit);
+};
+
+card.onclick = () => openLink(url);
+
+card.appendChild(title);
+card.appendChild(sub);
+card.appendChild(edit);
+
+box.insertBefore(card, box.lastElementChild);
+}
+
+/* EDIT */
+function editShortcut(btn){
+
+let card = btn.parentElement;
+
+let name = prompt("New name:", card.children[0].textContent);
+if(!name) return;
+
+let url = prompt("New URL:", card.children[1].textContent);
+if(!url) return;
+
+card.children[0].textContent = name;
+card.children[1].textContent = url;
+
+card.onclick = () => openLink(url);
+}
+
+/* ENTER KEY */
+q.addEventListener("keydown", e=>{
+if(e.key === "Enter"){
+searchWeb();
+}
+});
+
+</script>
+
+</body>
+</html>
