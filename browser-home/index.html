@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ORVI Browser</title>
+<title>New Tab</title>
 
 <style>
 
@@ -32,7 +32,6 @@ background-position:center;
 color:white;
 }
 
-/* MAIN */
 .container{
 width:980px;
 max-width:95vw;
@@ -50,7 +49,6 @@ border:1px solid rgba(255,255,255,.10);
 text-align:center;
 }
 
-/* TOP */
 .topbar{
 display:flex;
 justify-content:space-between;
@@ -62,28 +60,21 @@ margin-bottom:30px;
 .logo{
 font-size:40px;
 font-weight:800;
-letter-spacing:2px;
 }
 
-/* SELECT */
 select{
 padding:12px 16px;
 
 border:none;
-outline:none;
-
 border-radius:14px;
 
 background:rgba(255,255,255,.12);
 
 color:white;
-
-cursor:pointer;
 }
 
 select option{ color:black; }
 
-/* SEARCH */
 .search{
 display:flex;
 gap:12px;
@@ -154,13 +145,8 @@ background:rgba(255,255,255,.16);
 
 .small{
 font-size:12px;
-opacity:.75;
+opacity:.7;
 margin-top:5px;
-}
-
-/* ADD CARD */
-.add{
-background:rgba(79,134,255,.25);
 }
 
 /* EDIT BUTTON */
@@ -185,6 +171,10 @@ cursor:pointer;
 
 .editBtn:hover{
 background:rgba(255,255,255,.25);
+}
+
+.add{
+background:rgba(79,134,255,.25);
 }
 
 </style>
@@ -217,7 +207,7 @@ background:rgba(255,255,255,.25);
 
 <div class="search">
 
-<input id="query" type="text" placeholder="Search the web...">
+<input id="query" type="text" placeholder="Search...">
 
 <button onclick="searchWeb()">Search</button>
 
@@ -225,27 +215,23 @@ background:rgba(255,255,255,.25);
 
 <div class="shortcuts" id="shortcuts">
 
-<div class="card">
+<div class="card" data-url="https://youtube.com" onclick="openShortcut(this)">
 YouTube
-<div class="small">Video</div>
-<button class="editBtn" onclick="editShortcut(this)">Edit</button>
+<button class="editBtn" onclick="editShortcut(event,this)">Edit</button>
 </div>
 
-<div class="card">
+<div class="card" data-url="https://orvi-os.github.io" onclick="openShortcut(this)">
 Orvi OS
-<div class="small">Project</div>
-<button class="editBtn" onclick="editShortcut(this)">Edit</button>
+<button class="editBtn" onclick="editShortcut(event,this)">Edit</button>
 </div>
 
-<div class="card">
+<div class="card" data-url="https://wikipedia.org" onclick="openShortcut(this)">
 Wikipedia
-<div class="small">Knowledge</div>
-<button class="editBtn" onclick="editShortcut(this)">Edit</button>
+<button class="editBtn" onclick="editShortcut(event,this)">Edit</button>
 </div>
 
 <div class="card add" onclick="addShortcut()">
 + Add
-<div class="small">Shortcut</div>
 </div>
 
 </div>
@@ -268,9 +254,9 @@ engine.value + encodeURIComponent(q.value),
 );
 }
 
-/* OPEN */
-function openLink(url){
-window.open(url,"_blank","noopener");
+/* OPEN SHORTCUT (uses hidden dataset url) */
+function openShortcut(el){
+window.open(el.dataset.url,"_blank","noopener");
 }
 
 /* ADD */
@@ -292,52 +278,45 @@ let box = document.getElementById("shortcuts");
 
 let card = document.createElement("div");
 card.className = "card";
+card.dataset.url = url;
 
-let title = document.createElement("div");
-title.textContent = name;
+card.innerHTML = `
+${name}
+<button class="editBtn">Edit</button>
+`;
 
-let sub = document.createElement("div");
-sub.className = "small";
-sub.textContent = url;
+card.onclick = () => openShortcut(card);
 
-let edit = document.createElement("button");
-edit.className = "editBtn";
-edit.textContent = "Edit";
-
-edit.onclick = function(e){
-e.stopPropagation();
-editShortcut(edit);
+card.querySelector("button").onclick = (e)=>{
+editShortcut(e,card.querySelector("button"));
 };
-
-card.onclick = () => openLink(url);
-
-card.appendChild(title);
-card.appendChild(sub);
-card.appendChild(edit);
 
 box.insertBefore(card, box.lastElementChild);
 }
 
-/* EDIT */
-function editShortcut(btn){
+/* EDIT (FIXED) */
+function editShortcut(e,btn){
+
+e.stopPropagation();
 
 let card = btn.parentElement;
 
-let name = prompt("New name:", card.children[0].textContent);
+let name = prompt("New name:", card.firstChild.textContent.trim());
 if(!name) return;
 
-let url = prompt("New URL:", card.children[1].textContent);
+let url = prompt("New URL:", card.dataset.url);
 if(!url) return;
 
-card.children[0].textContent = name;
-card.children[1].textContent = url;
+/* update visible name only */
+card.childNodes[0].textContent = name + " ";
 
-card.onclick = () => openLink(url);
+/* update hidden url */
+card.dataset.url = url;
 }
 
-/* ENTER KEY */
+/* ENTER */
 q.addEventListener("keydown", e=>{
-if(e.key === "Enter"){
+if(e.key==="Enter"){
 searchWeb();
 }
 });
