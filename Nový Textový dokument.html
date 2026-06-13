@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orvithium OS — Minimalist Terminal OS based on Arch Linux</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-deep: #0A0A0A;
+            --bg-card: #121212;
+            --bg-card-hover: #181818;
+            --accent-blue: #4DA3FF;
+            --accent-purple: #7C5CFF;
+            --accent-cyan: #2DE2E6;
+            --text-main: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(18, 18, 18, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Background Elements */
+        .ambient-glow {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(124, 92, 255, 0.15) 0%, rgba(77, 163, 255, 0.05) 50%, transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(80px);
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-left: 2rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-main);
+        }
+
+        /* Shared Layout Styles */
+        section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem auto;
+            font-weight: 300;
+        }
+
+        /* 1. Hero Section */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding-top: 8rem;
+        }
+
+        /* Abstract Logo Symbol */
+        .hero-logo-symbol {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 2rem;
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-logo-symbol .core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background-color: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--accent-cyan);
+        }
+
+        .hero-logo-symbol .orbit {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--accent-blue);
+            border-bottom: 2px solid var(--accent-purple);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            background: linear-gradient(180deg, #FFFFFF 0%, #A0A0A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .tagline {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+        }
+
+        .hero .subtext {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .cta-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 20px rgba(124, 92, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(124, 92, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--text-secondary);
+        }
+
+        /* 2. Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background-color: var(--bg-card-hover);
+            border-color: rgba(77, 163, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-icon {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        /* 3. System Preview Section */
+        .mockup-window {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .mockup-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mockup-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mockup-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .mockup-title {
+            margin: 0 auto;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .mockup-body {
+            padding: 2rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(10, 10, 10, 0.4);
+            min-height: 320px;
+        }
+
+        .ln { color: rgba(255, 255, 255, 0.2); margin-right: 1rem; }
+        .keyword { color: var(--accent-purple); }
+        .string { color: var(--accent-cyan); }
+        .accent-text { color: var(--accent-blue); }
+
+        /* 4. Ecosystem Section */
+        .ecosystem-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .layer {
+            background: linear-gradient(90deg, rgba(18, 18, 18, 0.8) 0%, rgba(25, 25, 25, 0.4) 100%);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.3s;
+        }
+
+        .layer:hover {
+            border-color: rgba(124, 92, 255, 0.4);
+        }
+
+        .layer-info h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .layer-info p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .layer-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-blue);
+            background: rgba(77, 163, 255, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        /* 5. Download Section */
+        .download-box {
+            background: radial-gradient(circle at top left, rgba(77, 163, 255, 0.05), transparent), var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 4rem 2rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .download-box h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .version-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .checksum {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 1.5rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-main);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero .tagline { font-size: 1.2rem; }
+            nav { padding: 1.5rem 5%; }
+            .nav-links { display: none; }
+            section { padding: 5rem 1.5rem; }
+            .section-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <nav>
+        <div class="nav-logo">Orvithium OS</div>
+        <div class="nav-links">
+            <a href="#features">Specifikace</a>
+            <a href="#preview">Konzole</a>
+            <a href="#ecosystem">Architektura</a>
+            <a href="#download">Instalace</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-logo-symbol">
+            <div class="core"></div>
+            <div class="orbit"></div>
+        </div>
+        <h1>Orvithium OS</h1>
+        <div class="tagline">Next Generation Operating System</div>
+        <div class="subtext">Pure Terminal. Arch Linux Base. Built for power users.</div>
+        
+        <div class="cta-container">
+            <a href="https://github.com/orvi-os/orvithium-download" class="btn btn-primary">Download ISO</a>
+            <a href="https://github.com" target="_blank" class="btn btn-secondary">View GitHub</a>
+        </div>
+    </section>
+
+    <section id="features">
+        <h2 class="section-title">Arch Linux na steroidech</h2>
+        <p class="section-subtitle">Žádné X11, žádný Wayland, žádný bloatware. Jen čistá TTY konzole s custom linuxovým kernelem a bleskovou odezvou.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">// 01</div>
+                <h3>Arch Linux Base</h3>
+                <p>Plná kompatibilita s repozitáři Pacman a AUR. Využijte stabilitu a nejnovější balíčky špičkové distribuce.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">// 02</div>
+                <h3>NXT-sh Shell</h3>
+                <p>Předinstalovaný, moderní asynchronní shell s nativním našeptáváním, git integrací a extrémní rychlostí.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">// 03</div>
+                <h3>Nulový režijní šum</h3>
+                <p>Systém po startu spotřebovává pouze 512 MB RAM. Veškerý zbylý výkon dává vaší práci, ne těžkopádnému grafickému prostředí.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">// 04</div>
+                <h3>Hardware Acceleration</h3>
+                <p>Nativní podpora GPU akcelerace přímo v TTY pro vykreslování tmuxu, terminálové grafiky a multiplexerů.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">// 05</div>
+                <h3>Orvi Dev Stack</h3>
+                <p>Předkonfigurované prostředí pro kontejnery (Docker/Podman), vestavěný Neovim s LSP a podpora síťových nástrojů.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">// 06</div>
+                <h3>Git-Driven Configs</h3>
+                <p>Celý operační systém se konfiguruje pomocí dotfiles. Záloha, obnova nebo replikace prostředí jedním příkazem z GitHubu.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="preview">
+        <h2 class="section-title">Dokonalé CLI prostředí</h2>
+        <p class="section-subtitle">Ukázka čistého bootu systému a okamžitého vypsání systémových specifikací pomocí vestavěného nástroje fastfetch.</p>
+        
+        <div class="mockup-window">
+            <div class="mockup-header">
+                <div class="mockup-dots">
+                    <div class="mockup-dot" style="background: rgba(255,255,255,0.1);"></div>
+                    <div class="mockup-dot" style="background: rgba(255,255,255,0.1);"></div>
+                    <div class="mockup-dot" style="background: rgba(255,255,255,0.1);"></div>
+                </div>
+                <div class="mockup-title">tty1: /dev/sda1 (Orvithium OS v1.0)</div>
+            </div>
+            <div class="mockup-body">
+                <p><span class="ln">01</span>Orvithium OS Linux 6.12.0-orvithium-arch (tty1)</p>
+                <p><span class="ln">02</span></p>
+                <p><span class="ln">03</span><span class="accent-text">orvithium-node</span> login: root</p>
+                <p><span class="ln">04</span>Password: ••••••••••••</p>
+                <p><span class="ln">05</span>Last login: Sat Jun 13 15:52:01 on tty1</p>
+                <p><span class="ln">06</span></p>
+                <p><span class="ln">07</span>[root@orvithium]~# fastfetch</p>
+                <p><span class="ln">08</span>   <span class="accent-text">/\</span>          <span class="keyword">OS:</span> Orvithium OS v1.0.0 (Terminal Only)</p>
+                <p><span class="ln">09</span>  <span class="accent-text">/  \</span>         <span class="keyword">Base:</span> Arch Linux x86_64</p>
+                <p><span class="ln">10</span> <span class="accent-text">/\  /\</span>        <span class="keyword">Kernel:</span> 6.12.0-orvithium-arch</p>
+                <p><span class="ln">11</span><span class="accent-text">/  \/  \</span>       <span class="keyword">Shell:</span> nxt-sh v2.4 (ZSH compatible)</p>
+                <p><span class="ln">12</span>               <span class="keyword">Packages:</span> 412 (pacman)</p>
+                <p><span class="ln">13</span>               <span class="keyword">Memory:</span> 512MB / 16384MB (3.1%)</p>
+                <p><span class="ln">14</span></p>
+                <p><span class="ln">15</span>[root@orvithium]~# <span class="accent-text">■</span></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="ecosystem">
+        <h2 class="section-title">Struktura systému</h2>
+        <p class="section-subtitle">Jak je Orvithium pod kapotou poskládáno pro maximální efektivitu.</p>
+        
+        <div class="ecosystem-stack">
+            <div class="layer">
+                <div class="layer-info">
+                    <h4>NXT-sh Core CLI</h4>
+                    <p>Interaktivní rozhraní, tmux multiplexer a vlastní systémové utility (orvi-cli).</p>
+                </div>
+                <span class="layer-tag">User Workspace</span>
+            </div>
+            <div class="layer">
+                <div class="layer-info">
+                    <h4>Arch Linux Repositories</h4>
+                    <p>Správa balíčků pomocí Pacman a AUR (Arch User Repository) pro neomezený přístup k softwaru.</p>
+                </div>
+                <span class="layer-tag">Package Base</span>
+            </div>
+            <div class="layer">
+                <div class="layer-info">
+                    <h4>Orvithium Hardened Kernel</h4>
+                    <p>Modifikované a zeštíhlené linuxové jádro optimalizované pro NVMe disky a bleskový boot.</p>
+                </div>
+                <span class="layer-tag">Kernel Layer</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="download">
+        <div class="download-box">
+            <h2>Vyzkoušejte čistou rychlost</h2>
+            <span class="version-badge">Arch-Based Rolling Release: Sestavení 2026.06-Stable</span>
+            
+            <a href="https://github.com/orvi-os/orvithium-download" class="btn btn-primary" style="display: inline-block; margin-bottom: 1rem;">Stáhnout Orvithium ISO (x86_64)</a>
+            <br>
+            <a href="https://github.com" target="_blank" class="btn btn-secondary" style="display: inline-block; font-size: 0.85rem;">Instalační skript a Wiki</a>
+            
+            <div class="checksum">SHA256: d57e12f81c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855aa345</div>
+        </div>
+    </section>
+
+    <footer>
+        <div>&copy; 2026 Orvithium OS. Neoficiální komunitní projekt postavený na Arch Linuxu.</div>
+        <div class="footer-links">
+            <a href="https://github.com" target="_blank">GitHub</a>
+            <a href="#">Arch Wiki</a>
+            <a href="#">Dotfiles</a>
+            <a href="#">GPLv3 Licence</a>
+        </div>
+    </footer>
+
+</body>
+</html>
