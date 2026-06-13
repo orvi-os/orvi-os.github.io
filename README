@@ -1,42 +1,42 @@
-name: Update Countdown
+# 🪐 Orvithium OS
 
-on:
-  schedule:
-    - cron: '0 * * * *' # Spustí se každou hodinu
-  workflow_dispatch: # Umožní spustit ručně
+> Next Generation Operating System. Pure Terminal. Arch Linux Base. Built for power users.
 
-jobs:
-  update-readme:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+Orvithium OS je ultra-minimalistický, bezpečný a bleskově rychlý operační systém bez grafického balastu (žádné X11, žádný Wayland). Přináší čisté TTY prostředí s modifikovaným linuxovým kernelem, moderním asynchronním shellem a plnou kompatibilitou s Arch Linux repozitáři.
 
-      - name: Calculate Countdown
-        run: |
-          # NASTAV SVÉ DATUM ZDE (Formát: RRRR-MM-DD)
-          TARGET_DATE="2026-12-24"
-          
-          # Výpočet dnů
-          TARGET_SECS=$(date -d "$TARGET_DATE" +%s)
-          CURRENT_SECS=$(date +%s)
-          DIFF_SECS=$((TARGET_SECS - CURRENT_SECS))
-          DAYS=$((DIFF_SECS / 86400))
+---
 
-          if [ $DAYS -gt 0 ]; then
-            TEXT="📅 Do cílového data zbývá přesně **$DAYS dní**!"
-          else
-            TEXT="🎉 Cíl byl dosažen!"
-          fi
+## 🚀 Orvithium 1.0.0 Release Countdown
 
-          # Zápis do README mezi kotvy
-          sed -i "//,// { //! { //! d } }" README.md
-          sed -i "//a $TEXT" README.md
+Verze **Orvithium 1.0 Stable** oficiálně vychází již **31. července 2026**! 
 
-      - name: Commit changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add README.md
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update countdown"
-          git push
+📅 Do vydání verze 1.0 zbývá už jen kousek!
+*Poznámka: Přesný počet dní se automaticky aktualizuje přes GitHub Actions.*
+
+---
+
+## ⚡ Hlavní specifikace
+
+* **Základ systému:** Arch Linux (Rolling Release kompatibilní s `pacman` a AUR).
+* **Prostředí:** Čistá, hardwarově akcelerovaná TTY konzole optimalizovaná pro multiplexery (`tmux`).
+* **Spotřeba:** Pouhých **512 MB RAM** ihned po startu systému.
+* **Shell:** `nxt-sh` – vestavěný asynchronní shell s integrovaným Gitem a inteligentním doplňováním.
+* **Vývojářský stack:** Předkonfigurovaný Neovim (s LSP), Docker/Podman a nativní podpora pro správu dotfiles.
+
+---
+
+## 🖥️ Ukázka prostředí (fastfetch)
+
+```text
+Orvithium OS Linux 6.12.0-orvithium-arch (tty1)
+
+orvithium-node login: root
+Password: ••••••••••••
+
+[root@orvithium]~# fastfetch
+   /\          OS: Orvithium OS v1.0.0 (Terminal Only)
+  /  \         Base: Arch Linux x86_64
+ /\  /\        Kernel: 6.12.0-orvithium-arch
+/  \/  \       Shell: nxt-sh v2.4 (ZSH compatible)
+               Packages: 412 (pacman)
+               Memory: 512MB / 16384MB (3.1%)
