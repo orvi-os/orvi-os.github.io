@@ -1,0 +1,42 @@
+name: Update Countdown
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Spustí se každou hodinu
+  workflow_dispatch: # Umožní spustit ručně
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Calculate Countdown
+        run: |
+          # NASTAV SVÉ DATUM ZDE (Formát: RRRR-MM-DD)
+          TARGET_DATE="2026-12-24"
+          
+          # Výpočet dnů
+          TARGET_SECS=$(date -d "$TARGET_DATE" +%s)
+          CURRENT_SECS=$(date +%s)
+          DIFF_SECS=$((TARGET_SECS - CURRENT_SECS))
+          DAYS=$((DIFF_SECS / 86400))
+
+          if [ $DAYS -gt 0 ]; then
+            TEXT="📅 Do cílového data zbývá přesně **$DAYS dní**!"
+          else
+            TEXT="🎉 Cíl byl dosažen!"
+          fi
+
+          # Zápis do README mezi kotvy
+          sed -i "//,// { //! { //! d } }" README.md
+          sed -i "//a $TEXT" README.md
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update countdown"
+          git push
