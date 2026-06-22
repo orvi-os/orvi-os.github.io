@@ -3,15 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mezinárodní test mladích geniálních předškoláků</title>
+<title>MTMGP</title>
 
 <style>
-body { font-family: Arial; margin:0; background:#f1f1f1; }
+body { font-family: Arial; margin:0; background:#f2f2f2; }
 .container { max-width:520px; margin:auto; padding:12px; }
 
+h1 { text-align:center; margin:10px 0; }
+
 .timer {
-    position:sticky; top:0;
-    background:#d32f2f; color:white;
+    position:sticky;
+    top:0;
+    background:#c62828;
+    color:white;
     padding:10px;
     text-align:center;
     font-weight:bold;
@@ -25,6 +29,8 @@ body { font-family: Arial; margin:0; background:#f1f1f1; }
     border-radius:12px;
     box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
+
+label { display:block; margin:4px 0; }
 
 button {
     width:100%;
@@ -45,94 +51,95 @@ button {
 </head>
 
 <body>
+
 <div class="container">
 
 <div class="timer" id="timer">30:00</div>
-<h2 style="text-align:center;">🧠 ULTRA HARD GENIUS TEST (60)</h2>
+
+<h1>MTMGP</h1>
 
 <div id="quiz"></div>
 
 <button onclick="submitTest()">UKONČIT TEST 🏆</button>
+
 <div class="card result" id="result"></div>
 
 </div>
 
 <script>
 const questions = [
-["1. Co je logicky nemožné?","A čas běží","B kruh má rohy","C voda je mokrá","D pes štěká"],
-["2. 12×12 = ?","A 144","B 121","C 132","D 140"],
-["3. Co je živé?","A kámen","B strom","C kov","D plast"],
-["4. 100 - 37 = ?","A 63","B 67","C 73","D 62"],
-["5. Co je abstraktní?","A číslo","B auto","C pes","D strom"],
+["1. Co je větší?","A myš","B slon","C pes","D kočka","B"],
+["2. 9 + 6 = ?","A 14","B 15","C 16","D 13","B"],
+["3. Co je živé?","A kámen","B pes","C auto","D plast","B"],
+["4. 100 - 37 = ?","A 63","B 67","C 73","D 62","A"],
+["5. Co nepatří?","A auto","B strom","C kolo","D pes","D"],
 
-["6. 9² = ?","A 81","B 72","C 90","D 99"],
-["7. Co roste?","A čas","B kámen","C plast","D kov"],
-["8. Kolik stran má čtverec?","A 3","B 4","C 5","D 6"],
-["9. Co je rychlejší?","A světlo","B auto","C kolo","D člověk"],
-["10. 15×3 = ?","A 45","B 40","C 50","D 35"],
+["6. 12×12 = ?","A 144","B 121","C 132","D 150","A"],
+["7. Co roste?","A čas","B kámen","C kov","D plast","A"],
+["8. Kolik stran má čtverec?","A 3","B 4","C 5","D 6","B"],
+["9. Co je rychlejší?","A světlo","B auto","C kolo","D člověk","A"],
+["10. 15×3 = ?","A 45","B 40","C 50","D 35","A"],
 
-["11. Co je paradox?","A věta sama sebe popírá","B pes","C strom","D auto"],
-["12. 144 ÷ 12 = ?","A 12","B 10","C 14","D 11"],
-["13. Co je logika?","A myšlení","B běh","C spánek","D jídlo"],
-["14. Kolik je 7×8?","A 56","B 54","C 58","D 60"],
-["15. Co je nekonečno?","A bez konce","B konec","C bod","D čára"],
+["11. Co je paradox?","A chyba","B věta sama sebe popírá","C strom","D auto","B"],
+["12. 144 ÷ 12 = ?","A 12","B 10","C 14","D 11","A"],
+["13. Co je logika?","A myšlení","B běh","C spánek","D jídlo","A"],
+["14. 7×8 = ?","A 56","B 54","C 58","D 60","A"],
+["15. Co je nekonečno?","A bez konce","B konec","C bod","D čára","A"],
 
-["16. 2⁵ = ?","A 32","B 16","C 64","D 20"],
-["17. Co je algoritmus?","A postup","B strom","C auto","D pes"],
-["18. 99 - 33 = ?","A 66","B 63","C 69","D 60"],
-["19. Co je číslo?","A abstrakce","B pes","C voda","D kámen"],
-["20. 6×7 = ?","A 42","B 36","C 48","D 40"],
+["16. 2⁵ = ?","A 32","B 16","C 64","D 20","A"],
+["17. Co je algoritmus?","A postup","B strom","C auto","D pes","A"],
+["18. 99 - 33 = ?","A 66","B 63","C 69","D 60","A"],
+["19. Co je číslo?","A abstrakce","B pes","C voda","D kámen","A"],
+["20. 6×7 = ?","A 42","B 36","C 48","D 40","A"],
 
-["21. Co je komplexní?","A problém","B míč","C auto","D pes"],
-["22. 11×11 = ?","A 121","B 111","C 131","D 101"],
-["23. Co je pravděpodobnost?","A šance","B jistota","C čas","D prostor"],
-["24. 8×9 = ?","A 72","B 81","C 64","D 70"],
-["25. Co je vědomí?","A uvědomování","B kámen","C auto","D voda"],
+["21. Co je komplexní?","A problém","B míč","C auto","D pes","A"],
+["22. 11×11 = ?","A 121","B 111","C 131","D 101","A"],
+["23. Co je pravděpodobnost?","A šance","B jistota","C čas","D prostor","A"],
+["24. 8×9 = ?","A 72","B 81","C 64","D 70","A"],
+["25. Co je vědomí?","A uvědomování","B kámen","C auto","D voda","A"],
 
-["26. 50 ÷ 2 = ?","A 25","B 20","C 30","D 15"],
-["27. Co je data?","A informace","B pes","C strom","D auto"],
-["28. 13×3 = ?","A 39","B 36","C 42","D 33"],
-["29. Co je funkce?","A vztah","B objekt","C strom","D auto"],
-["30. 100 ÷ 4 = ?","A 25","B 20","C 30","D 15"],
+["26. 50 ÷ 2 = ?","A 25","B 20","C 30","D 15","A"],
+["27. Co je data?","A informace","B pes","C strom","D auto","A"],
+["28. 13×3 = ?","A 39","B 36","C 42","D 33","A"],
+["29. Co je funkce?","A vztah","B objekt","C strom","D auto","A"],
+["30. 100 ÷ 4 = ?","A 25","B 20","C 30","D 15","A"],
 
-["31. Co je neuron?","A buňka","B kámen","C auto","D voda"],
-["32. 14×4 = ?","A 56","B 52","C 60","D 54"],
-["33. Co je model?","A simulace","B strom","C pes","D voda"],
-["34. 81 ÷ 9 = ?","A 9","B 8","C 7","D 6"],
-["35. Co je logická chyba?","A error","B strom","C auto","D voda"],
+["31. Co je neuron?","A buňka","B kámen","C auto","D voda","A"],
+["32. 14×4 = ?","A 56","B 52","C 60","D 54","A"],
+["33. Co je model?","A simulace","B strom","C pes","D voda","A"],
+["34. 81 ÷ 9 = ?","A 9","B 8","C 7","D 6","A"],
+["35. Co je chyba?","A error","B strom","C auto","D voda","A"],
 
-["36. 7² = ?","A 49","B 42","C 56","D 36"],
-["37. Co je inference?","A závěr","B začátek","C strom","D auto"],
-["38. 10³ = ?","A 1000","B 100","C 10","D 500"],
-["39. Co je struktura?","A uspořádání","B chaos","C voda","D pes"],
-["40. 5×5×5 = ?","A 125","B 100","C 150","D 75"],
+["36. 7² = ?","A 49","B 42","C 56","D 36","A"],
+["37. Co je inference?","A závěr","B začátek","C strom","D auto","A"],
+["38. 10³ = ?","A 1000","B 100","C 10","D 500","A"],
+["39. Co je struktura?","A uspořádání","B chaos","C voda","D pes","A"],
+["40. 5×5×5 = ?","A 125","B 100","C 150","D 75","A"],
 
-["41. Co je optimalizace?","A zlepšení","B zhoršení","C chaos","D voda"],
-["42. 64 ÷ 8 = ?","A 8","B 6","C 7","D 9"],
-["43. Co je systém?","A celek","B část","C voda","D kámen"],
-["44. 3×3×3 = ?","A 27","B 18","C 24","D 21"],
-["45. Co je transformace?","A změna","B stálost","C kámen","D voda"],
+["41. Co je optimalizace?","A zlepšení","B zhoršení","C chaos","D voda","A"],
+["42. 64 ÷ 8 = ?","A 8","B 6","C 7","D 9","A"],
+["43. Co je systém?","A celek","B část","C voda","D kámen","A"],
+["44. 3×3×3 = ?","A 27","B 18","C 24","D 21","A"],
+["45. Co je transformace?","A změna","B stálost","C kámen","D voda","A"],
 
-["46. 18×2 = ?","A 36","B 32","C 40","D 30"],
-["47. Co je problém?","A úkol","B kámen","C auto","D voda"],
-["48. 12×5 = ?","A 60","B 50","C 55","D 65"],
-["49. Co je řešení?","A odpověď","B otázka","C chaos","D voda"],
-["50. 9×9 = ?","A 81","B 72","C 90","D 99"],
+["46. 18×2 = ?","A 36","B 32","C 40","D 30","A"],
+["47. Co je problém?","A úkol","B kámen","C auto","D voda","A"],
+["48. 12×5 = ?","A 60","B 50","C 55","D 65","A"],
+["49. Co je řešení?","A odpověď","B otázka","C chaos","D voda","A"],
+["50. 9×9 = ?","A 81","B 72","C 90","D 99","A"],
 
-["51. Co je inteligence?","A schopnost myslet","B kámen","C voda","D auto"],
-["52. 15×4 = ?","A 60","B 50","C 55","D 65"],
-["53. Co je analýza?","A rozbor","B chaos","C pes","D auto"],
-["54. 1000 ÷ 10 = ?","A 100","B 10","C 50","D 200"],
-["55. Co je logický systém?","A pravidla","B chaos","C voda","D pes"],
+["51. Co je inteligence?","A myšlení","B kámen","C voda","D auto","A"],
+["52. 15×4 = ?","A 60","B 50","C 55","D 65","A"],
+["53. Co je analýza?","A rozbor","B chaos","C pes","D auto","A"],
+["54. 1000 ÷ 10 = ?","A 100","B 10","C 50","D 200","A"],
+["55. Co je systém?","A pravidla","B chaos","C voda","D pes","A"],
 
-["56. 25×2 = ?","A 50","B 40","C 60","D 45"],
-["57. Co je AI?","A umělá inteligence","B kámen","C voda","D auto"],
-["58. 7×6 = ?","A 42","B 36","C 48","D 40"],
-["59. Co je problém solving?","A řešení problémů","B chaos","C voda","D pes"],
-["60. 11×9 = ?","A 99","B 90","C 100","D 88"]
+["56. 25×2 = ?","A 50","B 40","C 60","D 45","A"],
+["57. Co je AI?","A umělá inteligence","B kámen","C voda","D auto","A"],
+["58. 7×6 = ?","A 42","B 36","C 48","D 40","A"],
+["59. Co je problém solving?","A řešení","B chaos","C voda","D pes","A"],
+["60. 11×9 = ?","A 99","B 90","C 100","D 88","A"]
 ];
-
-let correct = Array(60).fill("A");
 
 let quiz = document.getElementById("quiz");
 
@@ -140,33 +147,34 @@ questions.forEach((q, i) => {
     quiz.innerHTML += `
     <div class="card">
         <p><b>${q[0]}</b></p>
-        <label><input type="radio" name="q${i}" value="A"> A) ${q[1].split("A ")[1] || q[1]}</label><br>
-        <label><input type="radio" name="q${i}" value="B"> B) ${q[2]}</label><br>
-        <label><input type="radio" name="q${i}" value="C"> C) ${q[3]}</label><br>
-        <label><input type="radio" name="q${i}" value="D"> D) ${q[4]}</label>
+        <label><input type="radio" name="q${i}" value="A"> ${q[1]}</label>
+        <label><input type="radio" name="q${i}" value="B"> ${q[2]}</label>
+        <label><input type="radio" name="q${i}" value="C"> ${q[3]}</label>
+        <label><input type="radio" name="q${i}" value="D"> ${q[4]}</label>
     </div>
     `;
 });
 
-let time = 30*60;
-let timer = setInterval(()=>{
-    let m = Math.floor(time/60);
-    let s = time%60;
-    document.getElementById("timer").innerText = `${m}:${s<10?"0"+s:s}`;
+let time = 30 * 60;
+
+let timer = setInterval(() => {
+    let m = Math.floor(time / 60);
+    let s = time % 60;
+    document.getElementById("timer").innerText =
+        `${m}:${s < 10 ? "0"+s : s}`;
     time--;
-    if(time<0) submitTest();
-},1000);
+    if(time < 0) submitTest();
+}, 1000);
 
 function submitTest(){
     let score = 0;
 
     for(let i=0;i<60;i++){
         let q = document.querySelector(`input[name="q${i}"]:checked`);
-        if(q && q.value === correct[i]) score++;
+        if(q && q.value === questions[i][5]) score++;
     }
 
     let rank = "";
-
     if(score < 20) rank = "Explorer 🌱";
     else if(score < 35) rank = "Smart Thinker 🌟";
     else if(score < 50) rank = "Genius 🧠🔥";
